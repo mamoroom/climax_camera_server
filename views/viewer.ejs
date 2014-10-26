@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>SHARE 検閲</title>
+	<link rel='stylesheet' href='/stylesheets/style.css' />
+	<script type="text/javascript" src="/javascripts/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="/javascripts/TouchSlider/jquery.touchslider.js"></script>
+	<script type="text/javascript" src="/javascripts/jquery.motio.js"></script>
+	<script type="text/javascript">
+		window.global = {};
+		window.global.config = {
+			files: <%- JSON.stringify(files) %>,
+		};
+	</script>
+	<script type="text/javascript" src="/javascripts/viewer.js"></script>
+	</head>
+
+	<body>
+		<div id="panning" class="panning">
+		<h1>クライマックスCAMEARA</h1>
+		<div id="contents">
+			<div id="left_contents">
+				<div id="ng_json">
+				</div>
+			</div>
+			<div id="main_contents">
+				<div class="touchslider-container">
+					<div class="touchslider-viewport">
+						<div id="touchslider-item-container">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+	</body>
+</html>

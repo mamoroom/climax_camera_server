@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>ClimaxCamera Realtime Viewer</title>
+		<link rel='stylesheet' href='/stylesheets/style.css' />
+		<script type="text/javascript" src="/javascripts/jquery-1.8.3.min.js"></script> 
+		<script type="text/javascript">
+			window.global = {};
+			window.global.config = {
+				files: <%- JSON.stringify(files) %>
+			};
+		</script>
+		<script type="text/javascript" src="/socket.io/socket.io.js"></script> 
+		<script type="text/javascript" src="/javascripts/gallery.js"></script> 
+	</head>
+	<body>
+		<div id="container">
+			<h1>クライマックスCAMERA</h1>
+			<ul id="img-container" class="gallery">
+			</ul>
+		</div>
+	</body>
+</html>
