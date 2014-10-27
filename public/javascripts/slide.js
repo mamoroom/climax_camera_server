@@ -23,33 +23,23 @@ $(function() {
 
 	function initSnowFall() {
 		$(document).snowfall({
-
-		 flakeCount :50, // 数
-
-   flakeIndex : 1, // スタイルシートのz-indexの値
-
-   maxSpeed : 3, // 最大速度
-
-   minSpeed : 1, // 最小速度
-
-   maxSize  : 30, // 最大サイズ
-
-   minSize  : 10, // 最小サイズ
-
-   image : [
-
-      '/images/1.png',
-      '/images/2.png',
-      '/images/3.png',
-      '/images/4.png',
-      '/images/5.png',
-      '/images/6.png',
-      '/images/7.png'
-   ]
-
-});
+			flakeCount :50, // 数
+			flakeIndex : 1, // スタイルシートのz-indexの値
+			maxSpeed : 3, // 最大速度
+			minSpeed : 1, // 最小速度
+			maxSize  : 30, // 最大サイズ
+			minSize  : 10, // 最小サイズ
+			image : [
+				'/images/1.png',
+				'/images/2.png',
+				'/images/3.png',
+				'/images/4.png',
+				'/images/5.png',
+				'/images/6.png',
+				'/images/7.png'
+			]
+		});
 	}
-
 
 	function appendImg(filename) {
 		var item = $("<div/>").append('<img src="'+filename+'">').addClass("slide");
@@ -59,12 +49,96 @@ $(function() {
 
 
 	function prependImg(filename) {
-		var item = $("<div/>").append('<img src="'+filename+'">').addClass("slide").hide().fadeIn(1500);
-		item.addSly();
-		//item.prependTo(item_container).hide().fadeIn(1500);
+		var item = $("<div/>").append('<img src="'+filename+'">').addClass("slide");
+		var apperece_container = $("<div/>");
+		var apperence_baloon = $("<div>").append('<img src="/images/baloon.png">').addClass('apperence-baloon');
+		var apperence_item = item.clone();
+		apperence_item.addClass('apperence-item');
+		apperence_item.css("opacity", 1);
+		
+		apperece_container.append(apperence_baloon);
+		apperece_container.append(apperence_baloon.clone());
+		apperece_container.append(apperence_item);
+
+		apperece_container.appearanceAnimate(item);
 	}
 
-	function initAnimation() {
+	function initAnimation(original_slide) {
+		$.fn.appearanceAnimate = function(original_slide) {
+			var obj = this;
+			var opt = {
+				speed: 2,
+				y_src: $(document).height(),
+				x_src: ($(document).width() / 2),
+				y_dest: -20,
+				y_after_dest: -220,
+				y_toStartSly: 250,
+				x_revition: 50,
+				sec: 30
+			};
+			var _x = opt.x_src;
+			var _y = opt.y_src;
+			var step = 0;
+
+			obj.addClass('apperence-container');
+			$('body').append(obj);
+			_x += -obj.width()/2 + opt.x_revition;
+
+			re_coord(_x, _y);
+
+			var is_start_sly = false;
+			function animate() {
+				if (_y > opt.y_dest) {
+					update();
+					setTimeout(function() {
+						animate();
+					}, opt.sec);
+					if (_y < opt.y_toStartSly && !is_start_sly) {
+						is_start_sly = true;
+						// オリジナルslideを非表示で追加
+						original_slide.css("visibility", "hidden").addSly();
+						original_slide.toStartSly();
+					}
+				} else {
+					// ダミーslideを削除する
+					obj.find('.apperence-item').fadeOut(1000, function() {
+						$(this).remove();
+					});
+					// オリジナルslideの再表示
+					setTimeout(function() {
+						original_slide.css("visibility", "visible");
+					}, 100);
+					// 風船だけさらに飛ばし続ける
+					after_animate();
+				}
+			};
+			animate();
+
+			function after_animate() {
+				if (_y > opt.y_after_dest) {
+					update();
+					setTimeout(function() {
+						after_animate();
+					}, opt.sec);
+				}
+			}
+
+			function re_coord(x,y) {
+				obj.css("top", y+"px");
+				obj.css("left", x+"px");
+			}
+
+			function update() {
+				_y -= opt.speed;
+				step += random(1,10) / 100
+				_x += Math.cos(step);
+				re_coord(_x, _y);
+			}
+
+			function randam(min, max) {
+				return Math.round(min + Math.random()*(max-min));
+			}
+		};
 	}
 
 	function initSly() {
@@ -82,7 +156,7 @@ $(function() {
 			touchDragging: 1,
 			releaseSwing: 1,
 			//startAt: 3,
-			//scrollBar: $wrap.find('.scrollbar'),
+			scrollBar: $wrap.find('.scrollbar'),
 			scrollBy: 1,
 			speed: 700,
 			elasticBounds: 1,
@@ -98,30 +172,28 @@ $(function() {
 
 		$wrap.find('.start').on('click', function () {
 			var item = $(this).data('item');
-			// Animate a particular item to the start of the frame.
-			// If no item is provided, the whole content will be animated.
 			$frame.sly('toStart');
 		});
 
 		$wrap.find('.end').on('click', function () {
 			var item = $(this).data('item');
-			// Animate a particular item to the start of the frame.
-			// If no item is provided, the whole content will be animated.
 			$frame.sly('toEnd');
 		});
 
 		$.fn.addSly = function() {
-    	    var obj = this;
-    	    console.log($frame);
-    	    $frame.sly('add', obj, 0);
-			$frame.sly('toStart');
-    	};
+			var obj = this;
+			console.log($frame);
+			$frame.sly('add', obj, 0);
+		};
 
+		$.fn.toStartSly = function() {
+			$frame.sly('toStart');
+		};
 	}
 
 	function initSocket() {
 		//サーバーが受け取ったメッセージを返して実行する
-		var socket = io.connect('http://localhost/');
+		var socket = io.connect('http://mamoru-mbp15.local/');
 		socket.on('updated', function (msg) {
 			console.log(msg.file);
 			prependImg(msg.file);
