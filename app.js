@@ -38,6 +38,7 @@ if ('development' == app.get('env')) {
 app.get('/', index.get);
 app.post('/inbound', inbound.post);
 app.get('/viewer', viewer.get);
+app.get('/del_viewer', viewer.del);
 
 
 //Configuration
